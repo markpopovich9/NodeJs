@@ -12,8 +12,11 @@ function getCurrentYear(){
 function getDate() {
     console.log(moment().format("YYYY/DD/MM HH:mm:ss"));
 }
-
-getDate();
-getCurrentDay()
-getCurrentMonth()
-getCurrentYear()
+function getDayofMonth(){
+    console.log(moment().isoWeekday())
+}
+// getDate();
+// getCurrentDay()
+// getCurrentMonth()
+// getCurrentYear()
+getDayofMonth()
