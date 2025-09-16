@@ -15,8 +15,8 @@ function getDate() {
 function getDayofMonth(){
     console.log(moment().isoWeekday())
 }
-// getDate();
-// getCurrentDay()
-// getCurrentMonth()
-// getCurrentYear()
+getDate();
+getCurrentDay()
+getCurrentMonth()
+getCurrentYear()
 getDayofMonth()
