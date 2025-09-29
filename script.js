@@ -7,7 +7,12 @@ const path = require("path");
 const app = express();
 const HOST = "127.0.0.1";
 const PORT = 8000;
+const Products = path.join(__dirname, "products.json")
+const UserPath = path.join(__dirname, "users.json")
 
+const ProductsJson = JSON.parse(fs.readFileSync(Products, "utf8"))
+
+const userJson = JSON.parse(fs.readFileSync(UserPath, "utf8"))
 function getdate() {
   const date = moment();
   return date.format("YYYY/DD/MM HH:mm:ss");
@@ -17,48 +22,73 @@ app.get("/timestamp", (req, res) => {
   res.json({ timestamp: getdate() });
 });
 
+
 app.get("/posts", (req, res) => {
-  const PathToFile = path.join(__dirname, "products.json");
-  fs.readFile(PathToFile, "utf-8", (err, data) => {
-    if (err) {
-      return res.status(500).json({ error: "Ошибка чтения файла" });
+//  Создаем query параметры
+    const skip = req.query.skip
+    const take = req.query.take
+    const filter = req.query.filter
+    // Переводим ці параметри у потрібний тип
+    let Skip = Number(skip)
+    let Take = Number(take)
+    let Filter = Boolean(filter)
+    // Ці условія якщо нічого не задано
+    if (!skip){skip = 0
     }
-
-    let posts = JSON.parse(data);
-
-    let  skip = req.query.skip;
-    let take = req.query.take;
-    if ( isNaN(skip)) {
-      return res.status(400).json({ error: "skip должен быть числом" });
+    if (!take){take = Products.length
     }
-    if (isNaN(take)) {
-      return res.status(400).json({ error: "take должен быть числом" });
+    if (!Filter){filter = false}
+
+    // Перевірка чи вірний тип даних
+    if (isNaN(skip)){
+        res.status(400).json("Вкажіть число")
+        return
     }
-
-
-
-    posts = posts.slice(skip, take);
-
-    res.json(posts);
-  });
-});
-
-
+    if (isNaN(take)){
+        res.status(400).json("Вкажіть число")
+        return
+    }
+    if (!isBoolean(filter)) {
+        res.status(400).json("Вкажіть булеве значення")
+        return
+    }
+    // Створено зріз масиву постс 
+    let filtered = Products.slice(Skip, Take + Skip)
+    if (filter){
+        filteredPosts = filtered.filter((element) => {
+            return element.title.includes("a")
+        })
+    }
+    // Повертаеємо позитивний результат
+    res.status(200).json(filteredPosts)
+    
+})
 app.get("/posts/:id", (req, res) => {
-  const PathToFile = path.join(__dirname, "products.json");
-  fs.readFile(PathToFile, "utf-8", (err, data) => {
-    if (err) {
-      return res.status(500).json({ error: "Ошибка чтения файла" });
+    const product = ProductsJson[req.params.id]
+    if (!product){
+        res.status(404).json("продукт не знайдено")
+        return;
+    } 
+    res.status(200).json({product: ProductsJson[postId]})
+
+})
+app.get("/users", (req, res) => {
+    let allUsers =res.json({users: userJson})
+})
+// отримуємо користувача по id
+app.get("/users/:id", (req, res) => {
+    const fields = req.query.fields
+    let users = Number(req.params.id)
+   
+    const user = userJson.find(u => u.id === users)
+    if (!user){
+        res.status(404).json("користувач не знайдено")
+        return;
+    }
+    res.json({user})
     }
 
-    const posts = JSON.parse(data);
-    const id = req.params.id;
-
-
-    res.json(post);
-  });
-});
-
+)
 app.listen(PORT, HOST, () => {
   console.log(`http://${HOST}:${PORT}`);
 });
