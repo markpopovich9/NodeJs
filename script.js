@@ -33,11 +33,9 @@ app.get("/posts", (req, res) => {
     let Take = Number(take)
     let Filter = Boolean(filter)
     // Ці условія якщо нічого не задано
-    if (!skip){skip = 0
-    }
-    if (!take){take = Products.length
-    }
-    if (!Filter){filter = false}
+    if (!skip){Skip = 0}
+    if (!take){Take = Products.length}
+    if (!filter){Filter = false}
 
     // Перевірка чи вірний тип даних
     if (isNaN(skip)){
@@ -60,17 +58,18 @@ app.get("/posts", (req, res) => {
         })
     }
     // Повертаеємо позитивний результат
+    res.json(Products);
     res.status(200).json(filteredPosts)
     
 })
 app.get("/posts/:id", (req, res) => {
-    const product = ProductsJson[req.params.id]
-    if (!product){
+    const postId = Number(req.params.id);
+    const post = ProductsJson.find(p => p.id === postId);
+    if (!post){
         res.status(404).json("продукт не знайдено")
         return;
     } 
-    res.status(200).json({product: ProductsJson[postId]})
-
+    res.status(200).json(post)
 })
 app.get("/users", (req, res) => {
     let allUsers =res.json({users: userJson})
