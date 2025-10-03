@@ -10,7 +10,7 @@ const PORT = 8000;
 const Products = path.join(__dirname, "products.json")
 const UserPath = path.join(__dirname, "users.json")
 
-const ProductsJson = JSON.parse(fs.readFileSync(Products, "utf8"))
+let ProductsJson = JSON.parse(fs.readFileSync(Products, "utf8"))
 
 const userJson = JSON.parse(fs.readFileSync(UserPath, "utf8"))
 function getdate() {
@@ -21,8 +21,37 @@ function getdate() {
 app.get("/timestamp", (req, res) => {
   res.json({ timestamp: getdate() });
 });
-
-
+/// функція для додатку нового обєкту у json файл
+async function addJson(Massive, newObj) {
+    const massive = Massive
+    massive.push(newObj)
+    return await fsPromises.writeFile(jsonPathPosts, JSON.stringify(massive))
+}
+// обробляемо пост запит
+app.post("/posts", (req, res) => {
+    const body = req.body
+    // перевірка чи є щось в body
+    if(!body){
+        res.status(422).json("must be a body data")
+        return
+    }
+    // перевірка чи є всі дані в body
+    if (body.title || !body.description || body.image){
+        res.status(422).json("all of data will be in body")
+        return
+    }
+    // перевірка чи вірний тип даних
+    const posts = {
+        title: String(requestBody.title),
+        description: String(requestBody.description),
+        image: String(requestBody.image)
+    }
+    // додаємо id
+    const id = ProductsJson.at(-1).id + 1
+    posts.id = id
+    // успішне додавання
+    res.status(200).json(posts)
+})
 app.get("/posts", (req, res) => {
 //  Создаем query параметры
     const skip = req.query.skip
