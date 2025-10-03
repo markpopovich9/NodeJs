@@ -30,25 +30,34 @@ async function addJson(Massive, newObj) {
 // обробляемо пост запит
 app.post("/posts", (req, res) => {
     const body = req.body
+    // перевірка чи є всі дані в body
+    if (body.title){
+        res.status(422).json("title is required")
+        return
+    }
+    if (body.description){
+        res.status(422).json("description is required")
+        return
+    }
+    if (body.image){
+        res.status(422).json("image is required")
+        return
+    }
     // перевірка чи є щось в body
     if(!body){
         res.status(422).json("body is required")
         return
     }
-    // перевірка чи є всі дані в body
-    if (body.title || !body.description || body.image){
-        res.status(422).json("title, description and image are required")
-        return
-    }
+    // додаємо id
+    const id = ProductsJson.at(-1).id + 1
+    posts.id = id
+
     // перевірка чи вірний тип даних
     const posts = {
         title: String(body.title),
         description: String(body.description),
         image: String(body.image)
     }
-    // додаємо id
-    const id = ProductsJson.at(-1).id + 1
-    posts.id = id
     // успішне додавання
     res.status(200).json(posts)
 })
