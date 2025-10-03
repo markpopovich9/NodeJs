@@ -25,26 +25,26 @@ app.get("/timestamp", (req, res) => {
 async function addJson(Massive, newObj) {
     const massive = Massive
     massive.push(newObj)
-    return await fsPromises.writeFile(jsonPathPosts, JSON.stringify(massive))
+    return await fsPromises.writeFile(Products, JSON.stringify(massive))
 }
 // обробляемо пост запит
 app.post("/posts", (req, res) => {
     const body = req.body
     // перевірка чи є щось в body
     if(!body){
-        res.status(422).json("must be a body data")
+        res.status(422).json("body is required")
         return
     }
     // перевірка чи є всі дані в body
     if (body.title || !body.description || body.image){
-        res.status(422).json("all of data will be in body")
+        res.status(422).json("title, description and image are required")
         return
     }
     // перевірка чи вірний тип даних
     const posts = {
-        title: String(requestBody.title),
-        description: String(requestBody.description),
-        image: String(requestBody.image)
+        title: String(body.title),
+        description: String(body.description),
+        image: String(body.image)
     }
     // додаємо id
     const id = ProductsJson.at(-1).id + 1
