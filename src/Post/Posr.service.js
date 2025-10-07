@@ -7,17 +7,6 @@ const postService = {
             let Take = Number(take)
             let Filter = Boolean(filter)
         
-            
-            if (!skip){
-                Skip = 0
-            }
-            if (!take){
-                Take = repositoriy.postsFromJson.length
-            }
-            if (!filter){
-                Filter = false
-            }
-        
 
             if (isNaN(Skip)){
                 return {status:"error"}
@@ -30,7 +19,7 @@ const postService = {
                 return {status:"error"}
             }
             
-            let filteredPosts = repositoriy.postsFromJson.slice(Skip, Take + Skip)
+            let filteredPosts = postsFromJson.slice(Skip, Take + Skip)
             if (Filter){
                 filteredPosts = filteredPosts.filter((element) => {
                     return element.title.includes("a")
