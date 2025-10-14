@@ -1,3 +1,4 @@
+import {  UpdatePostData } from "./Post.types"
 export const postService = {
   getPostById: (postId: string) => {
     const response = { status: "ok", id: postId }
@@ -6,7 +7,7 @@ export const postService = {
     }
     return response
   },
-
+   
   getSlicedPosts: (skip: string, take: string, filter: string) => {
     const response = { status: "ok", skip, take, filter }
     if (response.status === "error") {
@@ -21,5 +22,14 @@ export const postService = {
       return "error"
     }
     return response
+  },
+  updatePostById: (id: string, updateData: UpdatePostData) => {
+  const response = { status: "ok", id, updateData }
+
+  if (response.status === "error") {
+    return "error"
   }
+
+  return response
+},
 }

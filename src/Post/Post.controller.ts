@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { postService } from "./Post.service"
+import { UpdatePostData } from "./Post.types"
 
 const postController = {
   getPostById: (req: Request, res: Response) => {
@@ -39,7 +40,31 @@ const postController = {
     }
 
     res.status(200).json(response)
-  }
+
+  },
+  updatePost: (req: Request, res: Response) => {
+    const id = req.params.id
+    const data = req.body as UpdatePostData 
+
+    if (!id) {
+      res.status(400).json("ID обязателен")
+      return
+    }
+
+    if (Object.keys(data).length === 0) {
+      res.status(400).json("Немає даних для оновлення")
+      return
+    }
+
+    const response = postService.updatePostById(id, data)
+
+    if (response === "error") {
+      res.status(404).json("Пост не знайдено")
+      return
+    }
+
+    res.status(200).json(response)
+  },
 }
 
 export default postController
