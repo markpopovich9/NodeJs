@@ -1,6 +1,7 @@
 
 import { Request, Response } from "express"
 
+
 export interface IPost {
     id: number
     title: string
@@ -17,6 +18,7 @@ export interface IPostController {
     getSlicedPosts(req: Request, res: Response): void
     addToJson(req: Request, res: Response): void
     updatePost(req: Request, res: Response): void
+    deletePost(req: Request, res: Response): void;
 }
 
 
@@ -25,4 +27,5 @@ export interface IPostService {
     getSlicedPosts(skip: string, take: string, filter: string): any
     addPostToJson(requestBody: any): any
     updatePostById(id: string, updateData: UpdatePostData): any
+    deletePostById(id: string): any;
 }

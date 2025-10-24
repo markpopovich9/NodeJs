@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { postService } from "./Post.service"
 import { UpdatePostData, IPostController } from "./Post.types"
 
-const postController: IPostController = {
+export const postController: IPostController = {
     getPostById: (req: Request, res: Response) => {
         const postId = req.params.id
         const response = postService.getPostById(postId)
@@ -57,7 +57,27 @@ const postController: IPostController = {
             return
         }
         res.status(200).json(response)
-    }
-}
+    },
+    
+    deletePost: async (req, res ) => {
+    try {
+      const id = req.params.id;
+      const response = await postService.deletePost(id);
 
-export default postController
+      if (response.status === "error") {
+        if (response.message === "Пост не найден") {
+          return res.status(404).json({ error: response.message });
+        }
+        return res.status(400).json({ error: response.message });
+      }
+
+      res.status(200).json(response.data);
+    } catch (error) {
+      console.error("Ошибка контроллера при удалении поста:", error);
+      res.status(500).json({ error: "Ошибка сервера" });
+    }
+  },
+};
+
+
+
