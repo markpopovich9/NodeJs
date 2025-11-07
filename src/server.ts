@@ -1,7 +1,7 @@
 import express from "express"
 import { postRouter } from "./Post/Post.router"
 import { postController } from "./Post/Post.controller"
-import { tagRouter } from "./Category/Categoty.router"
+import { tagRouter } from "./Tags/Tags.router"
 
 const HOST = "127.0.0.1"
 const PORT = 8000

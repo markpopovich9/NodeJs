@@ -1,5 +1,5 @@
-import { TagRepository } from "./Category.repository";
-import { IServiceContract } from "./Categoty.types";
+import { TagRepository } from "./Tags.repository";
+import { IServiceContract } from "./Tags.types";
 
 
 

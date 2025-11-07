@@ -1,5 +1,5 @@
 
-import { IRepositoryContract } from "./Categoty.types"
+import { IRepositoryContract } from "./Tags.types"
 import { client } from "../client/client"
 
 
