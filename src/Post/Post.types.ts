@@ -29,3 +29,10 @@ export interface IPostService {
     updatePostById(id: string, updateData: UpdatePostData): any
     deletePostById(id: string): any;
 }
+export interface IPostRepository {
+    findById(id: number): Promise<number | null>
+    findMany(skip: number, take: number): Promise<IPost[]>
+    create(data: CreatePostData): Promise<IPost>
+    update(id: number, data: UpdatePostData): Promise<IPost>
+    delete(id: number): Promise<IPost>;
+}

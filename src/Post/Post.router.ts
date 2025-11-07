@@ -1,10 +1,10 @@
-import express from "express"
+import { Router } from "express"
 import { postController } from "./Post.controller"
 
-const router = express.Router()
+export const postRouter = Router()
 
-router.get("/posts", postController.getSlicedPosts)
-router.get("/posts/:id", postController.getPostById)
-router.post("/posts", postController.addToJson)
-router.patch("/posts/:id", postController.updatePost)
-export default router
+postRouter.get("/posts", postController.getSlicedPosts)
+postRouter.get("/posts/:id", postController.getPostById)
+postRouter.post("/posts", postController.addToJson)
+postRouter.patch("/posts/:id", postController.updatePost)
+postRouter.delete("/posts/:id", postController.deletePost)

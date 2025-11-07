@@ -5,11 +5,7 @@ import { UpdatePostData, IPostController } from "./Post.types"
 export const postController: IPostController = {
     getPostById: (req: Request, res: Response) => {
         const postId = req.params.id
-        const response = postService.getPostById(postId)
-        if (response == "error") {
-            res.status(400).json("Thor: we analgave")
-            return
-        }
+        const response = postService.getPostById(String(postId))
         res.status(200).json(response)
     },
 
@@ -20,64 +16,39 @@ export const postController: IPostController = {
 
         const response = postService.getSlicedPosts(skip, take, filter)
 
-        if (response == "error") {
-            res.status(400).json("Tonamni бути числа")
-            return
-        }
+        
         res.status(200).json(response)
     },
 
     addToJson: (req: Request, res: Response) => {
         const requestBody = req.body
         const response = postService.addPostToJson(requestBody)
-
-        if (response == "error") {
-            res.status(400).json("error")
-            return
-        }
         res.status(200).json(response)
     },
 
-    updatePost: (req: Request, res: Response) => {
+    updatePost: (req, res) => {
         const id = req.params.id
         const data = req.body as UpdatePostData
 
-        if (!id) {
-            res.status(400).json("ID обязателен")
-            return
-        }
-        if (Object.keys(data).length == 0) {
-            res.status(400).json("Немає даних для оновлення")
-            return
-        }
-        
-        const response = postService.updatePostById(id, data)
-        if (response == "error") {
-            res.status(400).json("Thor: we analgave")
-            return
-        }
-        res.status(200).json(response)
-    },
-    
-    deletePost: async (req, res ) => {
-    try {
-      const id = req.params.id;
-      const response = await postService.deletePost(id);
 
-      if (response.status === "error") {
-        if (response.message === "Пост не найден") {
-          return res.status(404).json({ error: response.message });
-        }
-        return res.status(400).json({ error: response.message });
-      }
+
+        
+        const response = postService.updatePostById(String(id),data )
+        console.log(response);
+        res.status(200).json(response)    
+
+    },
+    deletePost: async (req: Request, res: Response) => {
+      const id = req.params.id;
+
+      const response = await postService.deletePostById(String(id));
+
+
 
       res.status(200).json(response.data);
-    } catch (error) {
-      console.error("Ошибка контроллера при удалении поста:", error);
-      res.status(500).json({ error: "Ошибка сервера" });
     }
-  },
-};
+    
+  }
 
 
 
