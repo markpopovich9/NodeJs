@@ -36,3 +36,9 @@ model PostTag {
 
   @@id([postId, tagId])
 }
+model User{
+  id Int @unique @default(autoincrement()) @id
+  name String
+  email String @unique
+  password String
+}
