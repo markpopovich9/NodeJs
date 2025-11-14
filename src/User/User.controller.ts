@@ -1,6 +1,7 @@
 import { IControllerContract } from "./User.types";
 import { userService } from "./User.service";
-
+import { verify } from "jsonwebtoken";
+import { ENV } from "../config/env";
 
 export const userController: IControllerContract = {
     registration: async(req, res) => {
@@ -12,5 +13,30 @@ export const userController: IControllerContract = {
         const dataUser = req.body;
         const response = await userService.findUserByEmail(dataUser)
         res.status(200).json(response)
-    }   
+    },
+    me: async(req, res) => {
+        const headers = req.headers.authorization
+        if (!headers){
+            res.status(401).json("Authorization is required!");
+            return;
+        }
+        const [ typeToken, token ] = headers.split(" ");
+        console.log()
+        if (typeToken !== "Bearer" || !token){
+            res.status(401).json("Invalid authorization!");
+            return;
+        }
+        try{
+            const decodedToken = verify(token, ENV.SECRET_KEY) as {id: number}
+            const me = await userService.me(decodedToken.id)
+            if (typeof me === "string"){
+                res.status(404).json("User doesn`t exist!")
+                return;
+            }
+            res.status(200).json(me)
+        }catch(error){
+            res.status(400).json("Error when decoding token")
+        }
+
+    }
 }       

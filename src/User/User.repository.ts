@@ -14,5 +14,15 @@ export const userRepository: IRepositoryContract = {
             email: email
         }})
         return foundedUser;
+    },
+    findByIdWithoutPassword: async (id) => {
+        try{
+            return await client.user.findUnique({
+            where:{id}, 
+            omit: {password: true}
     }
-}   
+)}
+        catch(error){
+            throw error
+            }
+}   }
