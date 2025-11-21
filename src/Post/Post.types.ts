@@ -1,38 +1,57 @@
+import { Request, Response} from "express"
+import { Prisma } from "../generated/prisma"
 
-import { Request, Response } from "express"
-
-// hoiholhi
-export interface IPost {
-    id: number
-    title: string
-    content: string
-    author: string
-    createdAt: string
+export interface IQueryParams {
+    skip?: string,
+    take?: string,
+    filter?: string
+}
+export interface IPost{
+    title: string,
+    description: string,
+    image: string
+}
+export interface IStatus<T>{
+    status: string,
+    message?: string,
+    data?: T
 }
 
-export type CreatePostData = Omit<IPost, 'id'>
-export type UpdatePostData = Partial<Omit<IPost, 'id'>>
+export type Post = Prisma.PostGetPayload<{}>;
 
-export interface IPostController {
-    getPostById(req: Request, res: Response): void
-    getSlicedPosts(req: Request, res: Response): void
-    addToJson(req: Request, res: Response): void
-    updatePost(req: Request, res: Response): void
-    deletePost(req: Request, res: Response): void;
+export type PostWithTags = Post & { tags: Prisma.TagGetPayload<{}>[] };
+export type CreatePost = Prisma.PostUncheckedCreateInput;
+export type CreatePostUnchecked = Omit<Prisma.PostUncheckedCreateInput, 'id'>;
+export type UpdatePost = Prisma.PostUpdateInput;
+export type UpdatePostUnchecked = Prisma.PostUncheckedUpdateInput
+export type BatchPayload = Prisma.BatchPayload
+
+export interface IControllerContract{
+    getPosts: (req: Request<object, Post[] | string, object, IQueryParams>,
+        res: Response<Post[]|string>) => void,
+    createPost: (req: Request<object, CreatePost|string, CreatePost>,
+        res: Response<CreatePost|string, {userId: number}>) => void,
+    getPostById: (req: Request<{id : string}, Post | string, object>,
+        res: Response<Post | string>) => void,
+    updatePostById: (req: Request<{id : string}, UpdatePost | string, UpdatePost>,
+        res: Response<UpdatePost | string>) => void,
+    deletePostById: (req: Request<{id: string}, Post | string, object>,
+        res: Response<Post | string> 
+    ) => void
 }
 
-
-export interface IPostService {
-    getPostById(postId: string): any
-    getSlicedPosts(skip: string, take: string, filter: string): any
-    addPostToJson(requestBody: any): any
-    updatePostById(id: string, updateData: UpdatePostData): any
-    deletePostById(id: string): any;
+export interface IServiceContract{
+    getPosts: (params: IQueryParams) => Promise<IStatus<Post[]>>,
+    createPost: (data: CreatePost, userId: number) => Promise<IStatus<CreatePost>>,
+    getPostById: (postId: number) => Promise<IStatus<Post>>,
+    updatePostById: (postId: number, data: UpdatePost) => Promise<IStatus<UpdatePost>>,
+    deletePostById: (postId: number) => Promise<{status: string, data?: Post}>
 }
-export interface IPostRepository {
-    findById(id: number): Promise<number | null>
-    findMany(skip: number, take: number): Promise<IPost[]>
-    create(data: CreatePostData): Promise<IPost>
-    update(id: number, data: UpdatePostData): Promise<IPost>
-    delete(id: number): Promise<IPost>;
+
+export interface IRepositoryContract{
+    getPosts: (paramsObj: {params: IQueryParams}) => Promise<Post[]>,
+    createPost: (data: CreatePost, user: number) => Promise<Post>,
+    getPostById: (postId: number) => Promise<Post | null>,
+    updatePostById: (postId: number, data: UpdatePost) => Promise<UpdatePost>,
+    deletePostById: (postId: number) => Promise<{status: string, data?: Post}>
 }

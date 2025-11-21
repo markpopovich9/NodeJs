@@ -1,12 +1,15 @@
 import { userRepository } from "./User.repository";
 import { IServiceContract } from "./User.types";
-
+import { compare, hash } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { ENV } from "../config/env";
 
 export const userService : IServiceContract = {
     createUser: async(data)=>{
-        const alrcreatedUser = await userRepository.createUser(data)
+
+        const hashedPassword = await hash(data.password, 10)
+        const dataWithHashedPassword = {...data, password: hashedPassword}
+        const alrcreatedUser = await userRepository.createUser(dataWithHashedPassword)
         if (!alrcreatedUser){
             return "error"
         }
@@ -18,7 +21,8 @@ export const userService : IServiceContract = {
         if (!findUser){
             return "error"
         }
-        if (!(data.password === findUser.password)){return "Password is incorrect!"}
+        const isMatch = await compare(data.password, findUser.password)
+         if (!(isMatch)){return "Password is incorrect!"}
         const token = sign({id: findUser.id}, ENV.SECRET_KEY, { expiresIn: "7d" })
         return { token }},
         me: async(id)=>{

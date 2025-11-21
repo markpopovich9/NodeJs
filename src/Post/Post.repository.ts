@@ -1,17 +1,80 @@
-import {client} from "../client/client";
-import { IPostRepository } from "./Post.types";
+import {client} from "../client/client"
+import { IRepositoryContract } from "./Post.types"
 
 
-export const postRepository: IPostRepository = {
-    findMany: async (skip = 0, take = 10) => {
-        return await client.post.findMany({ skip, take });
+export const PostRepository: IRepositoryContract ={
+    getPosts: async(paramsObj) => {
+        try{
+            const {skip, take} = { ...paramsObj.params }
+            const posts = await client.post.findMany({
+                ...(typeof skip !== 'undefined' ? { skip: Number(skip) } : {}),
+                ...(typeof take !== 'undefined' ? { take: Number(take) } : {})
+            })
+            return posts
+        }catch(error){
+            throw error
+        }
     },
-    findById: async (id: number) => {
-        return await client.post.findUnique({ where: { id } });
+    createPost: async(post, userId) => {
+        try{
+            const newPost = await client.post.create({
+                data: {
+                    title: post.title,
+                    description: post.description,
+                    image: post.image,
+                    tags: post.tags,
+                    userId: userId
+                }
+            })
+            return newPost
+        }catch(error){
+            throw error
+        }
     },
-    create: async (data: { title: string; content: string }) => {
-        return await client.post.create({ data })},
-    update: async (id: number, data: Partial<{ title: string; content: string }>) => {
-        return await client.post.update({ where: { id }, data });
+    getPostById: async(postId) => {
+        try{
+            const postById = await client.post.findUnique({
+                where: {
+                    id: postId
+                }
+            })
+            return postById
+        }
+        catch(error)
+        {
+            throw error
+        }
     },
-}; 
+    updatePostById: async(postId, data) => {
+        try{
+
+            const updatedPost = await client.post.update({where: 
+            {id: postId}
+            ,  
+            data: {
+            title: data.title,
+            description: data.description,
+            image: data,
+            tags: data,
+            }})
+            return updatedPost
+        }catch(error){
+            throw error
+        }
+    },
+    deletePostById: async(postId) => {
+        try{
+            const post = await client.post.delete({
+                where: {
+                    id: postId
+                }
+            })
+            return {
+                "status": "Succes",
+                "data": post
+            }
+        }catch(error){
+            throw error
+        }
+    }
+}

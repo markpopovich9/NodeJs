@@ -1,40 +1,82 @@
 
-import { PrismaClient } from "../generated/prisma";
-import { IPostService, UpdatePostData } from "./Post.types";
-const prisma = new PrismaClient();
-export const postService: IPostService = {
-    getPostById: (postId: string) => {
-        const response = { status: "ok", id: postId }
-        return response
+import { IServiceContract } from "./Post.types";
+import { client } from "../client/client";
+import { PostRepository } from "./Post.repository";
+
+
+export const requestService:IServiceContract = {
+    getPosts: async (params) => {
+        const products = await PostRepository.getPosts({params})
+        return {
+            status: "success",
+            data: products
+        }
     },
-
-    getSlicedPosts: (skip: string, take: string, filter: string) => {
-        const response = { status: "ok", skip, take, filter }
-        return response
+    createPost: async (data, userId) => {
+        const newPosts = await PostRepository.createPost(data, userId)
+        return {
+            status: "success",
+            data: newPosts
+        }
     },
-
-    addPostToJson: (requestBody: any) => {
-        const response = { status: "ok", data: requestBody }
-        return response
+    getPostById: async (postId) => {
+        const id = postId;
+        if (!Number(id)){
+            return {
+                status: "Problem with ID",
+                message: "Id is entering incorrectly!"
+            }
+        }
+        const postById = await PostRepository.getPostById(postId);
+        if (!postById){
+            return{
+                status: "Does not exist",
+                message: "Post with this id does not exist!"
+            }
+        }
+        return {
+            status: "success",
+            data: postById
+        }
     },
-
-    updatePostById: (id: string, updateData: UpdatePostData) => {
-        const response = { status: "ok", id, updateData }
-        return response
-
+    updatePostById: async (postId , data) => {  
+        const id = postId;
+        if (!Number(id)){
+            return {
+                status: "Problem with ID",
+                message: "Id is entering incorrectly!"
+            }
+        }
+        const postById = await PostRepository.getPostById(postId);
+        if (!postById){
+            return{
+                status: "Does not exist",
+                message: "Post with this id does not exist!"
+            }
+        }
+        const updatedData = Object.assign(postById, data)
+        const updatedPost = await PostRepository.updatePostById(id, updatedData)
+        return {
+            status: "succes",
+            data: updatedPost
+        }
     },
-    deletePostById(id: string) {
-   
-      const numId = Number(id);
-
-
-
-      const deletedPost =  prisma.post.delete({
-        where: { id: numId },
-      });
-
-      return { status: "ok", data: deletedPost };
-    } 
-
-};
-
+    deletePostById: async (postId) => {
+        try{
+            const post = await client.post.delete({
+                where: {
+                    id: postId
+                }
+            })
+            return {
+                "status": "Succes",
+                "data": post
+            }
+        }catch(error){
+            return {"status": "error",
+                "message": error
+            }
+        }
+    }
+}
+export default requestService

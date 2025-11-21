@@ -1,10 +1,14 @@
-import { Router } from "express"
-import { postController } from "./Post.controller"
+import express from "express"
+import requestController from "./Post.controller"
+import {AuthMiddleware} from "../middlewares/auth-middleware"
 
-export const postRouter = Router()
+const postRouter = express.Router();
 
-postRouter.get("/posts", postController.getSlicedPosts)
-postRouter.get("/posts/:id", postController.getPostById)
-postRouter.post("/posts", postController.addToJson)
-postRouter.patch("/posts/:id", postController.updatePost)
-postRouter.delete("/posts/:id", postController.deletePost)
+
+postRouter.get('/posts', requestController.getPosts)
+postRouter.post('/posts',AuthMiddleware, requestController.createPost)
+postRouter.get("/posts/:id",AuthMiddleware, requestController.getPostById)
+postRouter.patch("/posts/:id",AuthMiddleware, requestController.updatePostById)
+postRouter.delete("/posts/:id",AuthMiddleware, requestController.getPostById)
+
+export default postRouter

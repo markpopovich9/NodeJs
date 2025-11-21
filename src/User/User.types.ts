@@ -12,7 +12,7 @@ export type IStatus<T> = {
     data: T
 }
 export type CreateUser = Prisma.UserUncheckedCreateInput
-
+export type UserWithId = Prisma.UserGetPayload<{}>
 export interface IControllerContract {
     registration: (
         req: Request<object, IResponse | string, CreateUser>,
